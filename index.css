@@ -1,0 +1,69 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-size: 16px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: 500;
+}
+
+.form_wrap {
+    height: 320px;
+    background: #2a5a61f3;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+}
+
+.form_wrap .form_label {
+    font-size: 18px;
+    color: rgb(62, 202, 221);
+    text-align: center;
+}
+
+.form_wrap .form_input {
+    background: transparent;
+    border: .8px solid rgb(233, 233, 233);
+    padding: 18px;
+    font-size: 16px;
+    margin: 12px 0;
+    color: rgb(81, 181, 194);
+    height: 30px;
+}
+
+.form_wrap #submit_btn {
+    background: transparent;
+    outline: none;
+    padding: 12px 22px;
+    border: .8px solid #fff;
+    font-size: 14px;
+    color: rgb(81, 181, 194);
+    font-weight: bold;
+    cursor: pointer;
+
+    transition: .4s ease-in-out;
+}
+
+.form_wrap #submit_btn:hover {
+    border-radius: 8px;
+    border-color: rgb(0, 155, 175);
+}
+
+.team_name {
+    color: aqua;
+    text-transform: capitalize;
+    letter-spacing: 8px;
+}
+
+.time {
+    color: white;
+    letter-spacing: 8px;
+    border-radius: 50px;
+    border: 1.5px solid orange;
+    padding: 8px
+}
