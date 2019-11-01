@@ -110,7 +110,7 @@ formWrapYPos = 82;
 
 const GAME_QUESTIONS = [
 	'Enter team name',
-	// 'Enter player names',
+	'Enter player names',
 ]
 
 let current_question = 0;
@@ -165,22 +165,6 @@ function setTeamName(name, which_team){
 }
 
 /**
- * helps to get next question from lists of questions to be asked
- * :returns {String} the question to be asked
- */
-function nextGameQuestion(number_of_times_asked){	
-	if(number_of_times_asked === 2) {
-		// only when a single question has been asked twice
-		// can we proceed to the next question
-		current_question += 1;
-		return GAME_QUESTIONS[current_question];
-	}
-	// if a question has not been asked twice, we'll remain at 
-	// same question
-	return GAME_QUESTIONS[current_question];
-}
-
-/**
  * This helps to set a text as a question
  * @param {String} question_text text to be asked as question
  */
@@ -215,26 +199,46 @@ function questionFormPositionLogic(){
  * @param {String} question_text the text to be used as a question
  */
 function questionProcessor(){
-	if (current_question < GAME_QUESTIONS.length){
-		let question_text = '';
-		if (number_of_times_asked === 1){
-			question_text = nextGameQuestion(number_of_times_asked)
-			setTeamName(formInput.value, number_of_times_asked);
-			setQuestionOnFormLabel(question_text);
-			number_of_times_asked += 1;
-		}
-		else {
-			question_text = nextGameQuestion(number_of_times_asked)
-			setTeamName(formInput.value, number_of_times_asked);
-			setQuestionOnFormLabel(question_text);
-			number_of_times_asked = 1;
-		}
-		
-		formInput.value = '';
+	// this check needs no happen because current question number
+	// is what determines if the question form will be displayed 
+	// or not
+	if(number_of_times_asked === 2) {
+		// only when a single question has been asked twice
+		// can we proceed to the next question
+		current_question += 1;
 	}
+
+	let question_text = '';
+
+	if (number_of_times_asked === 1){
+		question_text = GAME_QUESTIONS[current_question]
+		// we're using `number_of_times_asked` to represent the team 
+		// whose name is to be set. e.g
+		// if number_of_times_asked = 1 :: then it's team one's name
+		setTeamName(formInput.value, number_of_times_asked);
+		setQuestionOnFormLabel(question_text);
+		number_of_times_asked += 1;
+	}
+
 	else {
+		question_text = GAME_QUESTIONS[current_question];
+		// we're using `number_of_times_asked` to represent the team 
+		// whose name is to be set. e.g
+		// if number_of_times_asked = 2 :: then it's team two's name
+		setTeamName(formInput.value, number_of_times_asked);
+		setQuestionOnFormLabel(question_text);
+		number_of_times_asked = 1;
+	}
+
+	// when the current question that is been asked is same as the 
+	// total number of question available to be asked, then all 
+	// questions have been asked so the form which is displaying 
+	// questions should be removed from the view.
+	if (current_question >= GAME_QUESTIONS.length){
 		formWrap.style.display = 'none';
 	}
+
+	formInput.value = '';
 }
 
 /**
