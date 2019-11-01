@@ -110,7 +110,7 @@ formWrapYPos = 82;
 
 const GAME_QUESTIONS = [
 	'Enter team name',
-	'Enter player names',
+	// 'Enter player names',
 ]
 
 let current_question = 0;
@@ -153,15 +153,12 @@ function styleElement(element, styles){
 function setTeamName(name, which_team){
 	// As there are two teams in a football pitch, there is need to 
 	// know which of the team's name is to be set.
-	// if(current_question === 0){
-		if (which_team === 1){
-			teamOneName.innerHTML = name;
-		}
-		else{
-			teamTwoName.innerHTML = name;
-		}
-		console.log("Hi");
-	// }
+	if (which_team === 1){
+		teamOneName.innerHTML = name;
+	}
+	else{
+		teamTwoName.innerHTML = name;
+	}
 }
 
 /**
@@ -236,6 +233,8 @@ function questionProcessor(){
 	// questions should be removed from the view.
 	if (current_question >= GAME_QUESTIONS.length){
 		formWrap.style.display = 'none';
+		// football simulation can commence.
+		simulateMovingFootball();
 	}
 
 	formInput.value = '';
@@ -584,11 +583,6 @@ function mainApp() {
 	formSubmitBtn.addEventListener('click', function(){
 		processInput();
 	});
-
-	if (current_question === GAME_QUESTIONS.length){
-		// football simulation can commence.
-		simulateMovingFootball();
-	}
 }
 
 
