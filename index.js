@@ -1,4 +1,136 @@
 /**
+ * ===================================================================
+ * ===================================================================
+ *     =================== CONFIGURATIONS ======================
+ */
+
+
+
+document.body.style.backgroundColor = '#545450';
+
+
+
+/** team time bar component (DOM element)
+ * This is a bar that displays both team name at left and right 
+ * side while current game play time at the middle
+ */
+const teamTimeBar = document.querySelector('.team_time_bar');
+const teamOneName = document.querySelector('.team_one_name');
+const teamTwoName = document.querySelector('.team_two_name');
+
+
+
+// team time bar layout construct
+const teamTimeBarStyles = {
+	display : 'flex',
+	justifyContent : 'space-around',
+	width: '1000px',
+	fontSize: '22px',
+	padding : '5px',
+	alignItems : 'center',
+}
+styleElement(teamTimeBar, teamTimeBarStyles);
+
+/** platform wrap component (DOM element) */
+const platformWrap = document.querySelector('.platform_wrap');
+const platformWrapYPos = 30;
+const platformWrapXPos = 10;
+
+/** configure the platform wrap top and left padding */
+platformWrap.style.paddingTop = `${platformWrapYPos}px`;
+platformWrap.style.paddingLeft = `${platformWrapXPos}px`;
+
+/** drawing tools constant */
+const canvas = document.querySelector('.platform');
+const context = canvas.getContext('2d');
+canvas.width = 1000;
+canvas.height = 500;
+
+/** goal post constant */
+const leftGoalXPos = 8;
+// goalWidth + leftGoalXPos === 18
+const rightGoalXPos = canvas.width - 18;
+const goalYPos = canvas.height / 2.5;
+const goalWidth = 10;
+const goalHeight = 90;
+
+/** football initializers */
+let footballXPos = canvas.width / 2;
+let footballYPos = canvas.height / 2;
+
+/** sideline constant */
+const padSideline = 8; // pads the sideline into the visible field area
+
+/**
+ * The value of padSideline is same as
+ * topSideline(vertically) & leftSideline(horizontally)
+ */
+
+// vertical position ends at the value of canvas.height, so to make the
+// sideline visible, there is need to deduct the padSideline from the
+// value of canvas.height
+const bottomSideLine = canvas.height - padSideline; // vertically
+
+// horizontal position ends at the value of canvas.width, so to make the
+// sideline visible, there is need to deduct the padSideline from the
+// value of canvas.width
+const rightSideLine = canvas.width - padSideline; // horizontally
+
+// simulation interval constant
+let simulationIntervalFlag = true;
+
+// info message constant
+const messageXPos = canvas.width / 2.5 + 8;
+const messageYPos = padSideline + 30;
+
+// corner flaging constant
+let isCorner = false;
+// the above immediate constant is set, because we don't want
+// Goal Scored to display when a Corner is displayed. Becuase
+// sometimes a ball can go above the goal post, to become a
+// corner, that doesn't mean it's a goal scored.
+
+
+
+
+// form handling component constant & setup. A football
+// game needs to have team name and other details, with our
+// forms, we'll be able to retrieve the choices of our user.
+const formSubmitBtn = document.querySelector('#submit_btn');
+const formLabel = document.querySelector('.form_label');
+const formInput = document.querySelector('.form_input');
+const formWrap = document.querySelector('.form_wrap');
+
+// global configuration of formWrap
+formWrap.style.width = `${canvas.width / 2}px`;
+
+
+formWrapYPos = 82;
+
+
+const GAME_QUESTIONS = [
+	'Enter team name',
+	// 'Enter player names',
+]
+
+let current_question = 0;
+// whatever questions to be asked, will be asked twice as there
+// are two teams to which will need to answer a particular question
+// by default this is set to `1`.
+let number_of_times_asked = 1;
+
+
+/**
+ *     ============== END OF CONFIGURATIONS ================
+ * ===================================================================
+ * ===================================================================
+ */
+
+
+
+
+
+/**
  * Helps to style a dom element
  * @param {*} element the dom element to be styled
  * @param {*} styles an object whose keys are css properties and
@@ -22,7 +154,7 @@ function setTeamName(name, which_team){
 	// As there are two teams in a football pitch, there is need to 
 	// know which of the team's name is to be set.
 	// if(current_question === 0){
-		if (which_team > 1){
+		if (which_team === 1){
 			teamOneName.innerHTML = name;
 		}
 		else{
@@ -32,30 +164,12 @@ function setTeamName(name, which_team){
 	// }
 }
 
-
-/**
- * checks if a question has been asked twice
- */
-function isAskedTwice(){
-	if (number_of_times_asked === 1){
-		// increase by one
-		number_of_times_asked += 1;
-		return false;
-	}
-	else {
-		// reset to default
-		number_of_times_asked = 1;
-		return true;
-	}
-}
-
 /**
  * helps to get next question from lists of questions to be asked
  * :returns {String} the question to be asked
  */
-function nextGameQuestion(){	
-	let asked_twice = isAskedTwice();
-	if(asked_twice) {
+function nextGameQuestion(number_of_times_asked){	
+	if(number_of_times_asked === 2) {
 		// only when a single question has been asked twice
 		// can we proceed to the next question
 		current_question += 1;
@@ -100,10 +214,22 @@ function questionFormPositionLogic(){
  * and removes it when there are no more question to be asked.
  * @param {String} question_text the text to be used as a question
  */
-function questionProcessor(question_text){
+function questionProcessor(){
 	if (current_question < GAME_QUESTIONS.length){
-		setTeamName(formInput.value, number_of_times_asked);
-		setQuestionOnFormLabel(question_text);
+		let question_text = '';
+		if (number_of_times_asked === 1){
+			question_text = nextGameQuestion(number_of_times_asked)
+			setTeamName(formInput.value, number_of_times_asked);
+			setQuestionOnFormLabel(question_text);
+			number_of_times_asked += 1;
+		}
+		else {
+			question_text = nextGameQuestion(number_of_times_asked)
+			setTeamName(formInput.value, number_of_times_asked);
+			setQuestionOnFormLabel(question_text);
+			number_of_times_asked = 1;
+		}
+		
 		formInput.value = '';
 	}
 	else {
@@ -111,6 +237,15 @@ function questionProcessor(question_text){
 	}
 }
 
+/**
+ * combines form processing (question and answering) and rendering
+ * of question form in a single function
+ * @param {question_text} question_text text to be used as a question
+ */
+function processInput(){
+	questionProcessor();
+	questionFormPositionLogic();
+}
 
 /**
  * helps to update the vertical and horizontal position of 
@@ -140,15 +275,6 @@ function positionFormWrapper(x, y){
 	formWrap.style.top = `${y}px`;
 }
 
-/**
- * combines form processing (question and answering) and rendering
- * of question form in a single function
- * @param {question_text} question_text text to be used as a question
- */
-function processInput(question_text){
-	questionProcessor(question_text);
-	questionFormPositionLogic();
-}
 
 
 /**
@@ -452,7 +578,7 @@ function mainApp() {
 
 	// event definition & handler for question form submit button
 	formSubmitBtn.addEventListener('click', function(){
-		processInput(nextGameQuestion());
+		processInput();
 	});
 
 	if (current_question === GAME_QUESTIONS.length){
@@ -460,129 +586,6 @@ function mainApp() {
 		simulateMovingFootball();
 	}
 }
-
-
-/**
- * ===================================================================
- * ===================================================================
- *     =================== CONFIGURATIONS ======================
- */
-
-
-
-document.body.style.backgroundColor = '#545450';
-
-
-
-/** team time bar component (DOM element)
- * This is a bar that displays both team name at left and right 
- * side while current game play time at the middle
- */
-const teamTimeBar = document.querySelector('.team_time_bar');
-const teamOneName = document.querySelector('.team_one_name');
-const teamTwoName = document.querySelector('.team_two_name');
-
-
-
-// team time bar layout construct
-const teamTimeBarStyles = {
-	display : 'flex',
-	justifyContent : 'space-around',
-	width: '1000px',
-	fontSize: '22px',
-	padding : '5px',
-	alignItems : 'center',
-}
-styleElement(teamTimeBar, teamTimeBarStyles);
-
-/** platform wrap component (DOM element) */
-const platformWrap = document.querySelector('.platform_wrap');
-const platformWrapYPos = 30;
-const platformWrapXPos = 10;
-
-/** configure the platform wrap top and left padding */
-platformWrap.style.paddingTop = `${platformWrapYPos}px`;
-platformWrap.style.paddingLeft = `${platformWrapXPos}px`;
-
-/** drawing tools constant */
-const canvas = document.querySelector('.platform');
-const context = canvas.getContext('2d');
-canvas.width = 1000;
-canvas.height = 500;
-
-/** goal post constant */
-const leftGoalXPos = 8;
-// goalWidth + leftGoalXPos === 18
-const rightGoalXPos = canvas.width - 18;
-const goalYPos = canvas.height / 2.5;
-const goalWidth = 10;
-const goalHeight = 90;
-
-/** football initializers */
-let footballXPos = canvas.width / 2;
-let footballYPos = canvas.height / 2;
-
-/** sideline constant */
-const padSideline = 8; // pads the sideline into the visible field area
-
-/**
- * The value of padSideline is same as
- * topSideline(vertically) & leftSideline(horizontally)
- */
-
-// vertical position ends at the value of canvas.height, so to make the
-// sideline visible, there is need to deduct the padSideline from the
-// value of canvas.height
-const bottomSideLine = canvas.height - padSideline; // vertically
-
-// horizontal position ends at the value of canvas.width, so to make the
-// sideline visible, there is need to deduct the padSideline from the
-// value of canvas.width
-const rightSideLine = canvas.width - padSideline; // horizontally
-
-// simulation interval constant
-let simulationIntervalFlag = true;
-
-// info message constant
-const messageXPos = canvas.width / 2.5 + 8;
-const messageYPos = padSideline + 30;
-
-// corner flaging constant
-let isCorner = false;
-// the above immediate constant is set, because we don't want
-// Goal Scored to display when a Corner is displayed. Becuase
-// sometimes a ball can go above the goal post, to become a
-// corner, that doesn't mean it's a goal scored.
-
-
-
-
-// form handling component constant & setup. A football
-// game needs to have team name and other details, with our
-// forms, we'll be able to retrieve the choices of our user.
-const formSubmitBtn = document.querySelector('#submit_btn');
-const formLabel = document.querySelector('.form_label');
-const formInput = document.querySelector('.form_input');
-const formWrap = document.querySelector('.form_wrap');
-
-// global configuration of formWrap
-formWrap.style.width = `${canvas.width / 2}px`;
-
-
-formWrapYPos = 82;
-
-
-const GAME_QUESTIONS = [
-	'Enter team name',
-	'Enter player names',
-]
-
-let current_question = 0;
-// whatever questions to be asked, will be asked twice as there
-// are two teams to which will need to answer a particular question
-// by default this is set to `1`.
-let number_of_times_asked = 1;
-
 
 
 // main app should run
