@@ -583,6 +583,13 @@ function simulateMovingFootball() {
 			newXPos = Math.floor(Math.random() * canvas.width);
 			newYPos = Math.floor(Math.random() * canvas.height);
 
+			/***
+			 * ********
+			 * ************
+			 * TESTING GOAL SCORED USING FIXED FOOTBALL POSITIONING
+			 * 
+			 */
+
 			// only uncomment the below newXPos and newYPos if you want to
 			// check that the goalScore functionality works
 
@@ -596,6 +603,12 @@ function simulateMovingFootball() {
 			// newXPos = rightGoalXPos + 5;
 			// newYPos = goalYPos + 8;
 
+			/***
+			 * ********
+			 * ************
+			 * TESTING CORNER KICK USING FIXED FOOTBALL POSITIONING
+			 * 
+			 */
 			// test that corner is displayed wen the ball goes beyond
 			// the same position of the goal post, in cases when the ball
 			// goes beyond the bar (goal post bar), it shouldn't be calculated
@@ -603,12 +616,12 @@ function simulateMovingFootball() {
 
 			// test that for left goal post
 
-			// newXPos = 10;
+			// newXPos = 1;
 			// newYPos = goalYPos + 8;
 
 			// test for right goal post
-			newXPos = rightGoalXPos + 6;
-			newYPos = goalYPos + 8;
+			// newXPos = rightGoalXPos + 15;
+			// newYPos = goalYPos + 8;
 
 			moveFootball(newXPos, newYPos);
 			checkThrowIn();
