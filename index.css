@@ -60,10 +60,16 @@ body {
     letter-spacing: 8px;
 }
 
-.time {
+.mid_view {
     color: white;
     letter-spacing: 8px;
     border-radius: 50px;
     border: 1.5px solid orange;
     padding: 8px
+}
+
+.mid_view .goals {
+    font-size: 16px;
+    margin: 0 8px;
+    color: aqua;
 }
