@@ -466,6 +466,53 @@ function checkCornerKick() {
 	}
 }
 
+/**
+ * Checks the team that has scored a goal and returns a representing
+ * value
+ * 
+ * @returns {String} : a representing value for team that has scored 
+ * a goal. It can only be one amongst these two values ("one", "two")
+ */
+function teamThatScoredGoal(){
+	// when a team scores a goal, it means the ball will be in it's
+	// opponent position
+
+	// the simulating football have a tracker that tracks it's current
+	// position on the field.
+
+	// split the field by two (one side each for a team)
+	let splitedFieldWidth = canvas.width / 2
+
+	// if the football's current position is greater than the `splittedFieldWidth`
+	// then it means it's team 1 that has scored a goal, else it is team two that
+	// has scored a goal
+
+	if (footballXPos > splitedFieldWidth){
+		return "one";
+	}
+
+	return "two";
+}
+
+function incrementTeamNumberOfGoals(){
+	// retrieve the team that scored representing value
+	let teamRepresentingValue = teamThatScoredGoal();
+
+	// compute the full details of the team that scored
+	let teamThatScored = `team_${teamRepresentingValue}_goals`;
+
+	// retrieve the DOM element within which the value of goal scored tracked
+	let currentGoalValueDOM = document.querySelector(`.${teamThatScored}`);
+
+	// get current value of goal scored
+	let currentAmountOfGoalScored = currentGoalValueDOM.textContent;
+
+	// increment the current goal scored by one and set it to it's holder
+	currentAmountOfGoalScored = parseInt(currentAmountOfGoalScored) + 1;
+
+	currentGoalValueDOM.textContent = currentAmountOfGoalScored;
+}
+
 function checkGoalScore() {
 	// we'll only be checking for horizontal position relative to the
 	// vertical space covered by the goal post
@@ -505,12 +552,17 @@ function checkGoalScore() {
 			footballYPos >= goalVerticalStartPosition &&
 			footballYPos <= goalVerticalEndPosition
 		) {
-			// if the above check passes, it means football is between the length of
-			// of a goal post for
+			// if the above check passes, it means football is within the length
+			// of a goal post
 			if (isCorner != true) {
-				// the the above check passes, it means the football did not go above the
-				// the goal post that would have made it to be a corner kick instead of goal scored.
+				// if the the above check passes, it means the football did not go above the
+				// goal post that would make it to be a corner kick instead of goal scored.
 				displayMessage('Goal Scored');
+
+				// calculate and increment the number of goals for the team that has scored
+				incrementTeamNumberOfGoals();
+
+				// pause simulation for a while
 				simulationIntervalFlag = false;
 				setTimeout(() => {
 					simulationIntervalFlag = true;
@@ -536,7 +588,7 @@ function simulateMovingFootball() {
 
 			// test goalScore functionality for left goal post
 
-			// newXPos = 9;
+			// newXPos = 10;
 			// newYPos = goalYPos + 8;
 
 			// test goalScore functionality for right goal post
@@ -551,12 +603,12 @@ function simulateMovingFootball() {
 
 			// test that for left goal post
 
-			// newXPos = 1;
+			// newXPos = 10;
 			// newYPos = goalYPos + 8;
 
 			// test for right goal post
-			// newXPos = rightGoalXPos + 15;
-			// newYPos = goalYPos + 8;
+			newXPos = rightGoalXPos + 6;
+			newYPos = goalYPos + 8;
 
 			moveFootball(newXPos, newYPos);
 			checkThrowIn();
